@@ -119,6 +119,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   body { overflow-x: hidden; }
   #passage-title { font-size: 1.2em; }
 }
+html.hd-zoomed #story { zoom: var(--hd-zoom); }
 html.hd-zoomed #passages, html.hd-zoomed .passage { max-width: none !important; }
 /* Zoom control bar — fixed bottom-right */
 #zoom-bar {
@@ -168,9 +169,7 @@ html.hd-zoomed #passages, html.hd-zoomed .passage { max-width: none !important; 
   try { var s = parseFloat(localStorage.getItem('hd-zoom')); if(s >= min && s <= max) scale = s; } catch(e){}
 
   function applyZoom() {
-    var el = document.getElementById('story');
-    if (!el) return;
-    el.style.zoom = scale >= 1.0 ? '' : scale;
+    document.documentElement.style.setProperty('--hd-zoom', scale);
     document.documentElement.classList.toggle('hd-zoomed', scale < 1.0);
     var lbl = document.getElementById('zoom-label');
     if (lbl) lbl.textContent = Math.round(scale * 100) + '%';
@@ -190,7 +189,7 @@ html.hd-zoomed #passages, html.hd-zoomed .passage { max-width: none !important; 
     document.getElementById('zoom-in').addEventListener('click', function(){
       if (scale < max) { scale = Math.round((scale + step) * 100) / 100; applyZoom(); }
     });
-    if (scale !== 1.0) applyZoom();
+    applyZoom();
   });
 })();
 </script>
