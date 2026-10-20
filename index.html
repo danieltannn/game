@@ -118,7 +118,87 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   body { overflow-x: hidden; }
   #passage-title { font-size: 1.2em; }
 }
+/* Zoom control bar — fixed bottom-right */
+#zoom-bar {
+  position: fixed;
+  bottom: 1.2em;
+  right: 0.8em;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+#zoom-bar button {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(15,15,15,0.82);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.28);
+  font-size: 1.5em;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#zoom-bar button:active { background: rgba(80,80,80,0.9); }
+#zoom-label {
+  width: 44px;
+  text-align: center;
+  color: rgba(255,255,255,0.75);
+  font-size: 0.68em;
+  font-family: sans-serif;
+  background: rgba(15,15,15,0.6);
+  border-radius: 6px;
+  padding: 2px 0;
+}
 </style>
+<script>
+(function(){
+  var scale = 1.0, min = 0.35, max = 1.0, step = 0.05;
+  try { var s = parseFloat(localStorage.getItem('hd-zoom')); if(s >= min && s <= max) scale = s; } catch(e){}
+
+  function applyZoom() {
+    var el = document.getElementById('story');
+    if (!el) return;
+    if (scale >= 1.0) {
+      el.style.transform = '';
+      el.style.transformOrigin = '';
+      el.style.width = '';
+    } else {
+      el.style.transformOrigin = 'top left';
+      el.style.transform = 'scale(' + scale + ')';
+      el.style.width = (100 / scale).toFixed(1) + '%';
+    }
+    var lbl = document.getElementById('zoom-label');
+    if (lbl) lbl.textContent = Math.round(scale * 100) + '%';
+    try { localStorage.setItem('hd-zoom', scale); } catch(e){}
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var bar = document.createElement('div');
+    bar.id = 'zoom-bar';
+    bar.innerHTML = '<button id="zoom-out" title="Zoom out">−</button>'
+                  + '<span id="zoom-label">100%</span>'
+                  + '<button id="zoom-in"  title="Zoom in">+</button>';
+    document.body.appendChild(bar);
+    document.getElementById('zoom-out').addEventListener('click', function(){
+      if (scale > min) { scale = Math.round((scale - step) * 100) / 100; applyZoom(); }
+    });
+    document.getElementById('zoom-in').addEventListener('click', function(){
+      if (scale < max) { scale = Math.round((scale + step) * 100) / 100; applyZoom(); }
+    });
+    if (scale !== 1.0) applyZoom();
+  });
+})();
+</script>
 </head>
 <body>
 	<div id="init-screen">
