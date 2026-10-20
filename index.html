@@ -118,6 +118,7 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   body { overflow-x: hidden; }
   #passage-title { font-size: 1.2em; }
 }
+html.hd-zoomed #passages, html.hd-zoomed .passage { max-width: none !important; }
 /* Zoom control bar — fixed bottom-right */
 #zoom-bar {
   position: fixed;
@@ -168,15 +169,8 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   function applyZoom() {
     var el = document.getElementById('story');
     if (!el) return;
-    if (scale >= 1.0) {
-      el.style.transform = '';
-      el.style.transformOrigin = '';
-      el.style.width = '';
-    } else {
-      el.style.transformOrigin = 'top left';
-      el.style.transform = 'scale(' + scale + ')';
-      el.style.width = (100 / scale).toFixed(1) + '%';
-    }
+    el.style.zoom = scale >= 1.0 ? '' : scale;
+    document.documentElement.classList.toggle('hd-zoomed', scale < 1.0);
     var lbl = document.getElementById('zoom-label');
     if (lbl) lbl.textContent = Math.round(scale * 100) + '%';
     try { localStorage.setItem('hd-zoom', scale); } catch(e){}
